@@ -4,7 +4,7 @@ import { AiOutlineMenu } from "react-icons/ai";
 
 export function Header() {
     return (
-        <header className="flex justify-center px-8 3xl:px-20 items-center-safe bg-primary-blue">
+        <header className="flex justify-center fixed z-10 w-full px-8 3xl:px-20 items-center-safe bg-primary-blue">
             <div className="flex justify-center mr-12 items-center cursor-pointer">
                 <AiOutlineMenu size={36} className="text-secondary-blue" />
             </div>

@@ -1,0 +1,39 @@
+/* TAMPA */
+.clip-path-lid {
+  clip-path: polygon(50% 0%, 0.8% 100%, 99.2% 100%);
+}
+
+/* ÁGUA */
+#nivelAgua {
+  overflow: hidden;
+  will-change: height, transform;
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  transform: translateZ(0); /* Força aceleração de hardware sem alterar visual */
+  
+  /* Gradiente mantido, mas simples para não impactar performance */
+  background: linear-gradient(to bottom, 
+    rgba(59, 130, 246, 0.8) 0%, 
+    rgba(37, 99, 235, 0.9) 100%
+  );
+}
+
+#nivelAgua::before,
+#nivelAgua::after {
+  content: '';
+  position: absolute;
+  top: -8px; 
+  width: 100%;
+  height: 16px;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 45%;
+}
+
+#nivelAgua::before {
+  opacity: 0.7;
+}
+
+#nivelAgua::after {
+  opacity: 0.5;
+  height: 12px; /* Levemente menor para variação */
+}
