@@ -1,21 +1,48 @@
 import Image from "next/image";
-
 import { AiOutlineMenu } from "react-icons/ai";
 
 export function Header() {
     return (
-        <header className="flex justify-center fixed z-10 w-full px-8 3xl:px-20 items-center-safe bg-primary-blue">
-            <div className="flex justify-center mr-12 items-center cursor-pointer">
-                <AiOutlineMenu size={24} className="text-secondary-blue" />
-            </div>
-            <div className="flex justify-center items-center cursor-pointer py-4">
-                <Image src="/logo.svg" alt="Logo" className=" w-12" width={10} height={10} />
-                <Image src="/logo-text.svg" alt="Logo Text" className="w-48" width={10} height={10} />
-            </div>
-            <div className="flex items-center gap-3 ml-auto pr-10 mt-2">
-                <div className="w-4 h-4 rounded-full bg-green-ball"></div>
-                <p className="text-secondary-blue font-semibold text-sm -translate-y-0.5">Sistema Online</p>
+        <header className="flex justify-center fixed z-10 w-full px-4 md:px-8 bg-primary-blue">
+            <div className="w-full flex justify-between items-center">
+
+                {/* Menu e Logo */}
+                <div className="flex items-center gap-4">
+                   
+                    <div className="md:hidden cursor-pointer">
+                        <AiOutlineMenu size={24} className="text-secondary-blue" />
+                    </div>
+
+                    <div className="absolute left-1/2 -translate-x-1/2 md:relative md:left-auto md:translate-x-0 flex items-center cursor-pointer py-4">
+                        {/* Logo Ícone */}
+                        <Image
+                            src="/logo.svg"
+                            alt="Logo"
+                            className="w-10 h-10 md:w-12 md:h-12"
+                            width={48}
+                            height={48}
+                        />
+                        {/* Logo Texto */}
+                        <Image
+                            src="/logo-text.svg"
+                            alt="Logo Text"
+                            className="hidden md:block w-48"
+                            width={192}
+                            height={40}
+                        />
+                    </div>
+
+                </div>
+
+                {/* Status do Sistema */}
+                <div className="flex items-center gap-3 py-5">
+                    <div className="w-4 h-4 rounded-full bg-green-ball flex-shrink-0"></div>
+                    <p className="hidden md:block text-secondary-blue font-semibold text-sm">
+                        Sistema Online
+                    </p>
+                </div>
+                
             </div>
         </header>
-    )
+    );
 }

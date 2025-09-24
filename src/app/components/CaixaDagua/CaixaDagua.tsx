@@ -18,18 +18,18 @@ export function CaixaDagua() {
     };
 
     return (
-        <div className="flex flex-col items-center p-4 font-sans bg-gray-100"> {/* Removi min-h-screen e justify-center para evitar ocupação total da tela e sobreposição com header fixo. Adicione pt-[altura-do-header] se necessário, ex: pt-16 para um header de ~64px */}
-            <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-8 w-full max-w-md sm:max-w-2xl mx-auto"> {/* Adicionei max-w e mx-auto para centralizar sem forçar altura total */}
+        <div className="flex flex-col items-center font-sans bg-gray-100"> 
+            <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-8 w-full max-w-md sm:max-w-2xl mx-auto"> 
                 
                 {/* Contêiner da Caixa D'água */}
                 <div className="w-[300px] flex-shrink-0">
 
                     {/* Tampa */}
-                    <div className="h-[75px] bg-primary-blue-dark clip-path-lid rounded-2xl z-0"></div> {/* Adicionei z-0 para garantir que fique abaixo de elementos fixos como header */}
-                    <div className="h-[20px] bg-primary-blue-dark rounded-b-2xl rounded-t-3xl mb-2 -translate-y-1 z-0"></div> {/* Mesmo z-index para consistência */}
+                    <div className="h-[75px] bg-primary-blue-dark clip-path-lid rounded-2xl z-0"></div> 
+                    <div className="h-[20px] bg-primary-blue-dark rounded-b-2xl rounded-t-3xl mb-2 -translate-y-1 z-0"></div>
 
                     {/* Tanque */}
-                    <div className="relative h-[250px] bg-primary-blue-dark rounded-3xl overflow-hidden shadow-lg z-0"> {/* z-0 para manter abaixo */}
+                    <div className="relative h-[250px] bg-primary-blue-dark rounded-3xl overflow-hidden shadow-lg z-0"> 
 
                         {/* Nível da Água */}
                         <div
@@ -69,7 +69,7 @@ export function CaixaDagua() {
                 </div>
 
                 {/* Informações de Volume */}
-                <div className="flex flex-col gap-3 text-center sm:text-left">
+                <div className="flex flex-col gap-3 mt-10 text-center sm:text-left">
                     <div className="bg-info-blue-light p-3 rounded-lg shadow-sm text-primary-blue-dark font-semibold">
                         Capacidade Total: {totalCapacity}L
                     </div>
