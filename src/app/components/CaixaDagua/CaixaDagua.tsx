@@ -9,7 +9,7 @@ export function CaixaDagua() {
     const [volume, setVolume] = useState(100); // Volume atual em litros
     const [caixaIndex, setCaixaIndex] = useState(1);
 
-    // MOCK DE DADSOS 
+    // MOCK DE DADOS 
     const currentPercentage = Math.round((volume / totalCapacity) * 100);
     const handleAlterarVolume = () => { // Gera um volume aleatório entre 0 e a capacidade total
         const newVolume = Math.floor(Math.random() * (totalCapacity + 1));
@@ -45,20 +45,22 @@ export function CaixaDagua() {
                             <span className="text-2xl font-medium block drop-shadow-md">{currentPercentage}%</span>
                         </div>
                     </div>
+
+                    {/* Botões que muda Tanque */}
                     <div className='w-full flex text-center items-center justify-between translate-y-4'>
                         <button 
-                            className="cursor-pointer p-1 hover:scale-110 transition-transform" // Adicionei padding e hover para melhor UX
+                            className="cursor-pointer p-1" 
                             onClick={handleAlterarVolume}
                         >
-                            <FaArrowCircleLeft color='blue' size={24} /> {/* Removi mr-2 desnecessário e adicionei size para consistência */}
+                            <FaArrowCircleLeft color='blue' size={24} />
                         </button>
 
-                        <p className="text-primary-blue-dark font-semibold flex-1 text-center mx-4 text-lg"> {/* flex-1 para ocupar espaço central e text-center para alinhar no meio; mx-4 para espaçamento dos botões */}
+                        <p className="text-primary-blue-dark font-semibold flex-1 text-center mx-4 text-lg"> 
                             Caixa {caixaIndex+1} 
                         </p>
 
                         <button 
-                            className="cursor-pointer p-1 hover:scale-105 transition-transform duration-500" // Mesmas melhorias no botão direito
+                            className="cursor-pointer p-1" 
                             onClick={handleAlterarVolume}
                         >
                             <FaArrowCircleRight color='blue' size={24} />

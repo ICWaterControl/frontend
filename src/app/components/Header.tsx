@@ -6,15 +6,15 @@ export function Header() {
     return (
         <header className="flex justify-center fixed z-10 w-full px-8 3xl:px-20 items-center-safe bg-primary-blue">
             <div className="flex justify-center mr-12 items-center cursor-pointer">
-                <AiOutlineMenu size={36} className="text-secondary-blue" />
+                <AiOutlineMenu size={24} className="text-secondary-blue" />
             </div>
-            <div className="flex justify-center items-center cursor-pointer">
-                <Image src="/logo.svg" alt="Logo" className="py-4 w-16" width={10} height={10} />
-                <Image src="/logo-text.svg" alt="Logo Text" className="w-54" width={10} height={10} />
+            <div className="flex justify-center items-center cursor-pointer py-4">
+                <Image src="/logo.svg" alt="Logo" className=" w-12" width={10} height={10} />
+                <Image src="/logo-text.svg" alt="Logo Text" className="w-48" width={10} height={10} />
             </div>
-            <div className="flex justify-center items-center gap-3 right-0 ml-auto mt-2 ">
-                <div className="w-5 h-5 rounded-full bg-green-ball"></div>
-                <p className="text-secondary-blue font-semibold">Sistema Online</p>
+            <div className="flex items-center gap-3 ml-auto pr-10 mt-2">
+                <div className="w-4 h-4 rounded-full bg-green-ball"></div>
+                <p className="text-secondary-blue font-semibold text-sm -translate-y-0.5">Sistema Online</p>
             </div>
         </header>
     )
