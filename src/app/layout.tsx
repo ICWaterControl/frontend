@@ -4,7 +4,7 @@ import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 
 export const metadata: Metadata = {
-  title: "Dashboard",
+  title: "MVP",
   description: "Projeto de Iniciação - SENAI CIMATEC",
 };
 
