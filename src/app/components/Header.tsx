@@ -7,7 +7,7 @@ import { useAqualesMeasurements } from "../hooks/useAqualesMeasurements";
 export function Header() {
     const { isConnected } = useAqualesMeasurements();
     return (
-        <header className="flex justify-center fixed z-10 w-full px-4 md:px-8 bg-primary-blue">
+        <header className="flex justify-center fixed z-10 w-full px-4 md:px-8 py-4 md:py-0 bg-primary-blue">
             <div className="w-full flex justify-between items-center">
 
                 {/* Menu e Logo */}

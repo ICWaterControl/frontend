@@ -42,10 +42,10 @@ export function CaixaDagua({ leitura, isConnected }: CaixaDaguaProps) {
   return (
     <div className="flex flex-col items-center font-sans bg-gray-100">
       <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-8 w-full max-w-md sm:max-w-2xl mx-auto">
-        
+
         {/* Lado Esquerdo: Caixa D'água com Régua Lateral Perfeitamente Alinhada */}
-        <div className="flex flex-col items-end flex-shrink-0">
-          
+        <div className="flex flex-col items-end flex-shrink-0 mr-25 md:mr-0">
+
           {/* Tampa da Caixa (Alinhada exatamente com o tanque) */}
           <div className="w-[260px] sm:w-[280px]">
             <div className="h-[75px] bg-primary-blue-dark clip-path-lid rounded-2xl z-0"></div>
@@ -54,10 +54,10 @@ export function CaixaDagua({ leitura, isConnected }: CaixaDaguaProps) {
 
           {/* Linha com a Régua Lateral e o Corpo do Tanque */}
           <div className="flex items-center gap-2 sm:gap-3">
-            
+
             {/* Régua de Cotas (Altura exata de 250px alinhada ao tanque) */}
             <div className="relative h-[250px] w-24 sm:w-28 flex flex-col justify-between text-xs select-none">
-              
+
               {/* Segmento Superior: Distância até a Água */}
               <div
                 className="relative flex items-center justify-end border-r-2 border-dashed border-amber-500 pr-2 transition-all duration-1000 ease-in-out"
@@ -147,7 +147,7 @@ export function CaixaDagua({ leitura, isConnected }: CaixaDaguaProps) {
         </div>
 
         {/* Informações de Volume e Sensor (POSIÇÃO ANTERIOR NA DIREITA) */}
-        <div className="flex flex-col gap-3 mt-10 text-center sm:text-left">
+        <div className="flex flex-col gap-3 mt-10 mr-4 md:mr-0 text-center sm:text-left">
           <div className="bg-info-blue-light p-3 rounded-lg shadow-sm text-primary-blue-dark font-semibold">
             Capacidade Total: {CAPACIDADE_TOTAL_L}L
           </div>
