@@ -1,14 +1,18 @@
+"use client"
+
 import Image from "next/image";
 import { AiOutlineMenu } from "react-icons/ai";
+import { useAqualesMeasurements } from "../hooks/useAqualesMeasurements";
 
 export function Header() {
+    const { isConnected } = useAqualesMeasurements();
     return (
         <header className="flex justify-center fixed z-10 w-full px-4 md:px-8 bg-primary-blue">
             <div className="w-full flex justify-between items-center">
 
                 {/* Menu e Logo */}
                 <div className="flex items-center gap-4">
-                   
+
                     <div className="md:hidden cursor-pointer">
                         <AiOutlineMenu size={24} className="text-secondary-blue" />
                     </div>
@@ -35,13 +39,13 @@ export function Header() {
                 </div>
 
                 {/* Status do Sistema */}
-                <div className="flex items-center gap-3 py-5">
-                    <div className="w-4 h-4 rounded-full bg-green-ball flex-shrink-0"></div>
-                    <p className="hidden md:block text-secondary-blue font-semibold text-sm">
-                        Sistema Online
-                    </p>
+                <div className="flex items-center gap-2">
+                    <span className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500 animate-pulse' : 'bg-amber-100'}`}></span>
+                    <span className="text-sm font-medium text-white">
+                        {isConnected ? 'Servidor conectado' : 'Conectando ao servidor...'}
+                    </span>
                 </div>
-                
+
             </div>
         </header>
     );
