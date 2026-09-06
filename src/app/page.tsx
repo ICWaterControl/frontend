@@ -82,7 +82,7 @@ export default function Dashboard() {
                 </p>
                 {error && (
                     <p className="text-sm text-red-500 mt-1">
-                        Aviso de conexão: Verifique as variáveis de ambiente do AppSync no .env
+                        Servidor offline
                     </p>
                 )}
             </section>
