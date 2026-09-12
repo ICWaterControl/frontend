@@ -3,14 +3,14 @@
 import { CaixaDagua } from "./components/CaixaDagua/CaixaDagua";
 import InfoBox from "./components/InfoBox";
 import { useAqualesMeasurements } from "./hooks/useAqualesMeasurements";
-import { ALTURA_CAIXA_CM, LIMIAR_NIVEL_CRITICO_PERCENT } from "@/lib/constants";
+import { INTERVALO_MEDICAO_MIN, calcularMedidas, formatarNumero } from "@/lib/constants";
 
 import { GoAlertFill } from "react-icons/go";
 import { RiCheckboxFill } from "react-icons/ri";
 import { IoWater } from "react-icons/io5";
 
 export default function Dashboard() {
-    const { leitura, variacaoDistancia, isConnected, error } = useAqualesMeasurements();
+    const { leituras, deviceIds, getVariacao, leitura, variacaoDistancia, isConnected, error } = useAqualesMeasurements();
 
     const formattedTimestamp = leitura?.timestamp
         ? new Date(leitura.timestamp).toLocaleString('pt-BR', {
@@ -23,10 +23,23 @@ export default function Dashboard() {
         })
         : (leitura?.timestamp || 'Aguardando dados do dispositivo...');
 
-    // Alerta crítico com base na altura global da caixa
-    const isVazio = leitura ? leitura.water_distance_cm >= ALTURA_CAIXA_CM : false;
-    const isNivelCritico = leitura ? leitura.water_distance_cm >= (ALTURA_CAIXA_CM * (1 - LIMIAR_NIVEL_CRITICO_PERCENT)) : false;
-    const hasAlert = isVazio || isNivelCritico;
+    // Cálculo da próxima medição
+    const formattedNextTimestamp = leitura?.timestamp
+        ? (() => {
+            const next = new Date(new Date(leitura.timestamp).getTime() + INTERVALO_MEDICAO_MIN * 60 * 1000);
+            return next.toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+        })()
+        : null;
+
+    // Medições centralizadas da caixa (distância efetiva sem offset, altura da água, volume, alertas)
+    const medidas = calcularMedidas(leitura?.water_distance_cm);
 
     // Tratamento de variação da distância da água
     let distanciaDescricao = isConnected ? "Tempo real" : "Último registro";
@@ -34,39 +47,42 @@ export default function Dashboard() {
 
     if (variacaoDistancia !== null && variacaoDistancia !== undefined) {
         if (variacaoDistancia > 0) {
-            distanciaDescricao = `+${variacaoDistancia} cm`;
-            distanciaIsIncrease = true; // Distância aumentou (nível da água baixou)
+            distanciaDescricao = `+${formatarNumero(variacaoDistancia)} cm`;
+            distanciaIsIncrease = true;
         } else if (variacaoDistancia < 0) {
-            distanciaDescricao = `${variacaoDistancia} cm`;
-            distanciaIsIncrease = false; // Distância diminuiu (nível da água subiu)
+            distanciaDescricao = `${formatarNumero(variacaoDistancia)} cm`;
+            distanciaIsIncrease = false;
         } else {
             distanciaDescricao = "Estável";
             distanciaIsIncrease = null;
         }
     }
 
+    // Quantidade de caixas ativas = quantidade de IDs únicos detectados
+    const caixasAtivas = deviceIds.length;
+
     // Estrutura de dados com as informações das infobox
     const infos = [
         {
             id: 1,
             titulo: "Caixas ativas",
-            valor: "1",
-            descricao: "0",
+            valor: String(caixasAtivas),
+            descricao: caixasAtivas === 0 ? "Aguardando" : "0",
             isIncrease: null,
             icon: <RiCheckboxFill className="w-14 h-14 -translate-x-2 text-green-500" />
         },
         {
             id: 2,
             titulo: "Alertas ativos",
-            valor: hasAlert ? "1" : "0",
-            descricao: isVazio ? "1 crítico (Vazio)" : isNivelCritico ? "1 crítico (Nível Baixo)" : "Sem alertas",
-            isIncrease: hasAlert ? true : null,
-            icon: <GoAlertFill className={`w-12 h-12 -translate-x-2 ${hasAlert ? 'text-red-500 animate-bounce' : 'text-amber-300'}`} />
+            valor: medidas.hasAlert ? "1" : "0",
+            descricao: medidas.isVazio ? "1 crítico (Vazio)" : medidas.isNivelCritico ? "1 crítico (Nível Baixo)" : "Sem alertas",
+            isIncrease: medidas.hasAlert ? true : null,
+            icon: <GoAlertFill className={`w-12 h-12 -translate-x-2 ${medidas.hasAlert ? 'text-red-500 animate-bounce' : 'text-amber-300'}`} />
         },
         {
             id: 3,
             titulo: "Distância da Água",
-            valor: leitura ? `${leitura.water_distance_cm} cm` : "-- cm",
+            valor: leitura ? `${medidas.distanciaEfetivaFormatada} cm` : "-- cm",
             descricao: distanciaDescricao,
             isIncrease: distanciaIsIncrease,
             icon: <IoWater className="w-16 h-16 text-primary-blue-light" />
@@ -79,6 +95,9 @@ export default function Dashboard() {
                 <h1 className="text-4xl font-bold text-neutral-800 mb-4">Dashboard</h1>
                 <p className="text-xl text-gray-700">
                     Última medição: {leitura ? formattedTimestamp : 'Aguardando medição do dispositivo...'}
+                </p>
+                <p className="text-lg text-gray-500">
+                    Próxima medição: {formattedNextTimestamp ?? 'Aguardando primeira medição...'}
                 </p>
                 {error && (
                     <p className="text-sm text-red-500 mt-1">
@@ -93,7 +112,12 @@ export default function Dashboard() {
                     ))}
                 </div>
                 <div className="">
-                    <CaixaDagua leitura={leitura} isConnected={isConnected} />
+                    <CaixaDagua
+                        leituras={leituras}
+                        deviceIds={deviceIds}
+                        getVariacao={getVariacao}
+                        isConnected={isConnected}
+                    />
                 </div>
             </section>
         </main>
