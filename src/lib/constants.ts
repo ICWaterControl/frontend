@@ -1,8 +1,8 @@
-// Configurações globais da caixa d'água / reservatório
+// Configurações globais da caixa d'água
 export const ALTURA_CAIXA_CM = 75; // Altura total da caixa d'água em cm (150 cm = caixa vazia / 0%)
 export const CAPACIDADE_TOTAL_L = 1000; // Capacidade máxima em litros
 export const LIMIAR_NIVEL_CRITICO_PERCENT = 0.1; // Limiar de nível crítico (10% de capacidade restante)
-export const INTERVALO_MEDICAO_MIN = 5; // Intervalo entre medições em minutos
+export const INTERVALO_MEDICAO_MIN = 30; // Intervalo entre medições em minutos
 export const OFFSET_DISTANCIA_CM = 7; // Offset da distância medida pelo sensor em cm (distância do sensor até a superfície da água quando a caixa está cheia)
 
 export interface MedidasCaixa {
