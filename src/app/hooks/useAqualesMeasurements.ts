@@ -39,7 +39,7 @@ const SUBSCRIPTION_QUERY = /* GraphQL */ `
   }
 `;
 
-const DEFAULT_DEVICE_ID =
+export const DEFAULT_DEVICE_ID =
   process.env.NEXT_PUBLIC_DEVICE_ID || '83432b29-cdad-48d5-ae85-67a2a8c02d59';
 
 const STORAGE_ALL_KEY = 'aquales_all_measurements';

@@ -2,7 +2,8 @@
 
 import { CaixaDagua } from "./components/CaixaDagua/CaixaDagua";
 import InfoBox from "./components/InfoBox";
-import { useAqualesMeasurements } from "./hooks/useAqualesMeasurements";
+import { HistoricoChart } from "./components/HistoricoChart";
+import { useAqualesMeasurements, DEFAULT_DEVICE_ID } from "./hooks/useAqualesMeasurements";
 import { INTERVALO_MEDICAO_MIN, calcularMedidas, formatarNumero } from "@/lib/constants";
 
 import { GoAlertFill } from "react-icons/go";
@@ -90,13 +91,13 @@ export default function Dashboard() {
     ];
 
     return (
-        <main className="bg-gray-100 min-h-screen">
-            <section className="px-14 md:px-28 pt-24 md:pt-32">
-                <h1 className="text-4xl font-bold text-neutral-800 mb-4">Dashboard</h1>
-                <p className="text-xl text-gray-700">
+        <main className="bg-gray-100 min-h-screen overflow-x-hidden">
+            <section className="px-6 sm:px-14 md:px-28 pt-24 md:pt-32">
+                <h1 className="text-3xl sm:text-4xl font-bold text-neutral-800 mb-4">Dashboard</h1>
+                <p className="text-lg sm:text-xl text-gray-700">
                     Última medição: {leitura ? formattedTimestamp : 'Aguardando medição do dispositivo...'}
                 </p>
-                <p className="text-lg text-gray-500">
+                <p className="text-base sm:text-lg text-gray-500">
                     Próxima medição: {formattedNextTimestamp ?? 'Aguardando primeira medição...'}
                 </p>
                 {error && (
@@ -105,13 +106,13 @@ export default function Dashboard() {
                     </p>
                 )}
             </section>
-            <section className="w-full flex grid-cols-2 gap-10 md:gap-24 xl:gap-76 py-8 lg:items-center md:px-18 lg:px-28 pb-18 lg:flex-row flex-col">
-                <div className="flex flex-col items-start md:items-center px-14 md:px-0 md:flex-row lg:flex-col gap-8 md:gap-6 lg:gap-4">
+            <section className="w-full flex grid-cols-2 gap-10 md:gap-24 xl:gap-76 py-8 lg:items-center md:px-18 lg:px-28 pb-12 sm:pb-18 lg:flex-row flex-col">
+                <div className="flex flex-col items-center sm:items-start md:items-center px-6 sm:px-14 md:px-0 md:flex-row lg:flex-col gap-6 md:gap-6 lg:gap-4">
                     {infos.map(info => (
                         <InfoBox key={info.id} {...info} />
                     ))}
                 </div>
-                <div className="">
+                <div className="w-full lg:w-auto">
                     <CaixaDagua
                         leituras={leituras}
                         deviceIds={deviceIds}
@@ -119,6 +120,12 @@ export default function Dashboard() {
                         isConnected={isConnected}
                     />
                 </div>
+            </section>
+            <section className="px-4 sm:px-10 md:px-18 lg:px-28 pb-18">
+                <HistoricoChart
+                    deviceId={leitura?.id ?? DEFAULT_DEVICE_ID}
+                    ultimaLeitura={leitura}
+                />
             </section>
         </main>
     );

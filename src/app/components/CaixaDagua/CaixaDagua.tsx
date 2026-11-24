@@ -6,6 +6,9 @@ import { LeiturasMap } from '@/app/hooks/useAqualesMeasurements';
 import { ALTURA_CAIXA_CM, CAPACIDADE_TOTAL_L, calcularMedidas } from '@/lib/constants';
 import './CaixaDagua.css';
 
+// Largura responsiva do tanque: cabe com folga ao lado da régua em qualquer celular
+const LARGURA_TANQUE = 'w-[205px] min-[390px]:w-[235px] sm:w-[280px]';
+
 interface CaixaDaguaProps {
   leituras: LeiturasMap;
   deviceIds: string[];
@@ -36,31 +39,31 @@ export function CaixaDagua({ leituras, deviceIds, getVariacao, isConnected }: Ca
   };
 
   return (
-    <div className="flex flex-col items-center font-sans bg-gray-100">
-      <div className="flex flex-col sm:flex-row items-center gap-5 sm:gap-8 w-full max-w-md sm:max-w-2xl mx-auto">
+    <div className="flex flex-col items-center font-sans bg-gray-100 w-full px-3 sm:px-0">
+      <div className="flex flex-col sm:flex-row items-center justify-center gap-5 sm:gap-8 w-full max-w-md sm:max-w-2xl mx-auto">
 
         {/* Lado Esquerdo: Caixa D'água com Régua Lateral */}
-        <div className="flex flex-col items-end flex-shrink-0 mr-25 md:mr-0">
+        <div className="flex flex-col items-end flex-shrink-0 max-w-full">
 
           {/* Tampa da Caixa */}
-          <div className="w-[260px] sm:w-[280px]">
-            <div className="h-[75px] bg-primary-blue-dark clip-path-lid rounded-2xl z-0"></div>
-            <div className="h-[20px] bg-primary-blue-dark rounded-b-2xl rounded-t-3xl mb-2 -translate-y-1 z-0"></div>
+          <div className={LARGURA_TANQUE}>
+            <div className="h-[62px] sm:h-[75px] bg-primary-blue-dark clip-path-lid rounded-2xl z-0"></div>
+            <div className="h-[18px] sm:h-[20px] bg-primary-blue-dark rounded-b-2xl rounded-t-3xl mb-2 -translate-y-1 z-0"></div>
           </div>
 
           {/* Régua Lateral + Corpo do Tanque */}
           <div className="flex items-center gap-2 sm:gap-3">
 
             {/* Régua de Cotas */}
-            <div className="relative h-[250px] w-24 sm:w-28 flex flex-col justify-between text-xs select-none">
+            <div className="relative h-[225px] sm:h-[250px] w-[84px] sm:w-28 flex-shrink-0 flex flex-col justify-between text-xs select-none">
 
               {/* Segmento Superior: Distância até a Água */}
               <div
-                className="relative flex items-center justify-end border-r-2 border-dashed border-amber-500 pr-2 transition-all duration-1000 ease-in-out"
+                className="relative flex items-center justify-end border-r-2 border-dashed border-amber-500 pr-1.5 sm:pr-2 transition-all duration-1000 ease-in-out"
                 style={{ height: `${100 - currentPercentage}%` }}
               >
                 <div className="absolute top-0 -right-[5px] w-2.5 h-0.5 bg-amber-500" />
-                <div className="bg-amber-50 border border-amber-300 text-amber-900 rounded-md px-1.5 py-0.5 shadow-xs text-right z-10">
+                <div className="bg-amber-50 border border-amber-300 text-amber-900 rounded-md px-1.5 py-0.5 shadow-xs text-right whitespace-nowrap z-10">
                   <span className="block text-[8px] sm:text-[9px] uppercase font-bold text-amber-700 leading-tight">
                     Dist. Água
                   </span>
@@ -73,11 +76,11 @@ export function CaixaDagua({ leituras, deviceIds, getVariacao, isConnected }: Ca
 
               {/* Segmento Inferior: Altura da Água */}
               <div
-                className="relative flex items-center justify-end border-r-2 border-solid border-blue-600 pr-2 transition-all duration-1000 ease-in-out"
+                className="relative flex items-center justify-end border-r-2 border-solid border-blue-600 pr-1.5 sm:pr-2 transition-all duration-1000 ease-in-out"
                 style={{ height: `${currentPercentage}%` }}
               >
                 <div className="absolute top-0 -right-[5px] w-2.5 h-0.5 bg-blue-600" />
-                <div className="bg-blue-50 border border-blue-300 text-blue-900 rounded-md px-1.5 py-0.5 shadow-xs text-right z-10">
+                <div className="bg-blue-50 border border-blue-300 text-blue-900 rounded-md px-1.5 py-0.5 shadow-xs text-right whitespace-nowrap z-10">
                   <span className="block text-[8px] sm:text-[9px] uppercase font-bold text-blue-700 leading-tight">
                     Altura Água
                   </span>
@@ -91,8 +94,8 @@ export function CaixaDagua({ leituras, deviceIds, getVariacao, isConnected }: Ca
             </div>
 
             {/* Corpo do Tanque */}
-            <div className="w-[260px] sm:w-[280px]">
-              <div className="relative h-[250px] bg-primary-blue-dark rounded-3xl overflow-hidden shadow-lg z-0">
+            <div className={LARGURA_TANQUE}>
+              <div className="relative h-[225px] sm:h-[250px] bg-primary-blue-dark rounded-3xl overflow-hidden shadow-lg z-0">
                 <div
                   id="nivelAgua"
                   className="absolute bottom-0 left-0 right-0 bg-primary-blue-light
@@ -101,10 +104,10 @@ export function CaixaDagua({ leituras, deviceIds, getVariacao, isConnected }: Ca
                   style={{ height: `${currentPercentage}%` }}
                 />
                 <div className="absolute inset-0 flex flex-col justify-center items-center text-white z-10">
-                  <span className="text-5xl font-bold leading-none drop-shadow-lg">
+                  <span className="text-4xl sm:text-5xl font-bold leading-none drop-shadow-lg">
                     {currentVolume}L
                   </span>
-                  <span className="text-2xl font-medium block drop-shadow-md">
+                  <span className="text-xl sm:text-2xl font-medium block drop-shadow-md">
                     {currentPercentage}%
                   </span>
                 </div>
@@ -114,7 +117,7 @@ export function CaixaDagua({ leituras, deviceIds, getVariacao, isConnected }: Ca
           </div>
 
           {/* Botões de navegação entre caixas */}
-          <div className="w-[260px] sm:w-[280px] flex text-center items-center justify-between translate-y-4">
+          <div className={`${LARGURA_TANQUE} flex text-center items-center justify-between translate-y-4`}>
             <button
               className="cursor-pointer p-1 disabled:opacity-30 disabled:cursor-default"
               onClick={handlePrev}
@@ -123,7 +126,7 @@ export function CaixaDagua({ leituras, deviceIds, getVariacao, isConnected }: Ca
               <FaArrowCircleLeft color="blue" size={24} />
             </button>
 
-            <p className="text-primary-blue-dark font-semibold flex-1 text-center mx-4 text-lg">
+            <p className="text-primary-blue-dark font-semibold flex-1 text-center mx-2 sm:mx-4 text-base sm:text-lg">
               {totalCaixas > 0
                 ? `Caixa ${safeIndex + 1} de ${totalCaixas}`
                 : 'Aguardando caixas...'}
@@ -141,7 +144,7 @@ export function CaixaDagua({ leituras, deviceIds, getVariacao, isConnected }: Ca
         </div>
 
         {/* Informações de Volume e Sensor */}
-        <div className="flex flex-col gap-3 mt-10 mr-4 md:mr-0 text-center sm:text-left">
+        <div className="flex flex-col gap-3 mt-10 w-full max-w-xs sm:w-auto px-3 sm:px-0 text-center sm:text-left">
           <div className="bg-info-blue-light p-3 rounded-lg shadow-sm text-primary-blue-dark font-semibold">
             Capacidade Total: {CAPACIDADE_TOTAL_L}L
           </div>
