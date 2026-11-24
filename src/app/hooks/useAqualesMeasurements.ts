@@ -12,6 +12,23 @@ export interface AqualesMeasurement {
 // Mapa de leituras: id do dispositivo -> leitura mais recente
 export type LeiturasMap = Record<string, AqualesMeasurement>;
 
+const LIST_MEASUREMENTS_QUERY = /* GraphQL */ `
+  query ListMeasurements(
+    $filter: TableAqualesMeasurementsFilterInput
+    $limit: Int
+    $nextToken: String
+  ) {
+    listAqualesMeasurements(filter: $filter, limit: $limit, nextToken: $nextToken) {
+      items {
+        id
+        timestamp
+        water_distance_cm
+      }
+      nextToken
+    }
+  }
+`;
+
 const SUBSCRIPTION_QUERY = /* GraphQL */ `
   subscription OnCreateMeasurement($id: String!) {
     onCreateAqualesMeasurements(id: $id) {
@@ -61,6 +78,116 @@ export function useAqualesMeasurements(deviceId: string = DEFAULT_DEVICE_ID) {
   useEffect(() => {
     if (!deviceId) return;
 
+    let isMounted = true;
+
+    async function fetchPagesByFilter(
+      filter: Record<string, unknown>
+    ): Promise<AqualesMeasurement[]> {
+      const allItems: AqualesMeasurement[] = [];
+      let nextToken: string | null = null;
+
+      do {
+        const response = (await client.graphql({
+          query: LIST_MEASUREMENTS_QUERY,
+          variables: { filter, nextToken },
+        })) as {
+          data?: {
+            listAqualesMeasurements?: {
+              items?: Array<AqualesMeasurement | null>;
+              nextToken?: string | null;
+            };
+          };
+        };
+
+        const connection = response.data?.listAqualesMeasurements;
+        if (connection?.items) {
+          for (const item of connection.items) {
+            if (item) allItems.push(item);
+          }
+        }
+        nextToken = connection?.nextToken ?? null;
+      } while (nextToken && isMounted);
+
+      return allItems;
+    }
+
+    // 1. Busca inicial no DynamoDB via AppSync para carregar a leitura mais recente (e a anterior) ao abrir a página
+    async function fetchInitialMeasurements() {
+      try {
+        // Filtra primeiro pelas últimas 48h para evitar trafegar todo o histórico da tabela
+        const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000)
+          .toISOString()
+          .slice(0, 10);
+
+        let items = await fetchPagesByFilter({
+          id: { eq: deviceId },
+          timestamp: { ge: twoDaysAgo },
+        });
+
+        // Se o microcontrolador ficou mais de 48h sem enviar dados, busca todo o histórico do id
+        if (isMounted && items.length < 2) {
+          items = await fetchPagesByFilter({
+            id: { eq: deviceId },
+          });
+        }
+
+        if (!isMounted) return;
+
+        if (items.length > 0) {
+          items.sort((a, b) => a.timestamp.localeCompare(b.timestamp));
+          const ultima = items[items.length - 1];
+          const penultima = items.length >= 2 ? items[items.length - 2] : null;
+
+          setLeituras((prev) => {
+            const existente = prev[ultima.id];
+            // Se uma leitura mais nova já chegou via subscription em tempo real, preserva ela
+            // e usa `ultima` do banco como leitura anterior (se for mais recente que a anterior salva)
+            if (existente && existente.timestamp > ultima.timestamp) {
+              setLeiturasAnteriores((prevAnts) => {
+                const antExistente = prevAnts[ultima.id];
+                if (antExistente && antExistente.timestamp >= ultima.timestamp) {
+                  return prevAnts;
+                }
+                const updatedAnts = { ...prevAnts, [ultima.id]: ultima };
+                try {
+                  localStorage.setItem(STORAGE_PREV_KEY, JSON.stringify(updatedAnts));
+                } catch {}
+                return updatedAnts;
+              });
+              return prev;
+            }
+
+            if (penultima) {
+              setLeiturasAnteriores((prevAnts) => {
+                const updatedAnts = { ...prevAnts, [ultima.id]: penultima };
+                try {
+                  localStorage.setItem(STORAGE_PREV_KEY, JSON.stringify(updatedAnts));
+                } catch {}
+                return updatedAnts;
+              });
+            }
+
+            const updated = { ...prev, [ultima.id]: ultima };
+            try {
+              localStorage.setItem(STORAGE_ALL_KEY, JSON.stringify(updated));
+            } catch {}
+            return updated;
+          });
+        }
+
+        setError(null);
+        setIsLoading(false);
+      } catch (err) {
+        if (!isMounted) return;
+        console.warn('Erro ao buscar leituras iniciais no AppSync:', err);
+        setError(err);
+        setIsLoading(false);
+      }
+    }
+
+    fetchInitialMeasurements();
+
+    // 2. Subscription em tempo real para novas leituras enviadas pelo microcontrolador
     try {
       const subscription = (
         client.graphql({
@@ -81,16 +208,17 @@ export function useAqualesMeasurements(deviceId: string = DEFAULT_DEVICE_ID) {
               if (leituraAtualDoId && leituraAtualDoId.timestamp !== novaLeitura.timestamp) {
                 setLeiturasAnteriores((prevAnts) => {
                   const updated = { ...prevAnts, [incomingId]: leituraAtualDoId };
-                  try { localStorage.setItem(STORAGE_PREV_KEY, JSON.stringify(updated)); } catch (e) { }
+                  try { localStorage.setItem(STORAGE_PREV_KEY, JSON.stringify(updated)); } catch {}
                   return updated;
                 });
               }
 
               const updated = { ...prev, [incomingId]: novaLeitura };
-              try { localStorage.setItem(STORAGE_ALL_KEY, JSON.stringify(updated)); } catch (e) { }
+              try { localStorage.setItem(STORAGE_ALL_KEY, JSON.stringify(updated)); } catch {}
               return updated;
             });
 
+            setError(null);
             setIsConnected(true);
             setIsLoading(false);
           }
@@ -106,6 +234,7 @@ export function useAqualesMeasurements(deviceId: string = DEFAULT_DEVICE_ID) {
       setIsConnected(true);
 
       return () => {
+        isMounted = false;
         subscription.unsubscribe();
       };
     } catch (err) {
@@ -113,6 +242,10 @@ export function useAqualesMeasurements(deviceId: string = DEFAULT_DEVICE_ID) {
       setError(err);
       setIsConnected(false);
       setIsLoading(false);
+
+      return () => {
+        isMounted = false;
+      };
     }
   }, [deviceId]);
 
